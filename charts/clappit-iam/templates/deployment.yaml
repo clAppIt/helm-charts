@@ -1,0 +1,192 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "clappit.iam.fullname" . }}
+  labels:
+    {{- include "clappit.iam.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "clappit.iam.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "clappit.iam.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "clappit.iam.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: clappit.iam.admin
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.registry }}/clappit.iam.admin:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          env:
+          - name: VIRTUAL_HOST
+            value: admin.skoruba.local    
+          - name: ConnectionStrings__ConfigurationDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+          - name: ConnectionStrings__PersistedGrantDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+          - name: ConnectionStrings__IdentityDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+          - name: ConnectionStrings__AdminLogDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+          - name: ConnectionStrings__AdminAuditLogDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+          - name: ConnectionStrings__DataProtectionDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+          - name: AdminConfiguration__IdentityAdminBaseUrl
+            value: https://admin.skoruba.local    
+          - name: AdminConfiguration__IdentityAdminRedirectUri
+            value: https://admin.skoruba.local/signin-oidc    
+          - name: AdminConfiguration__IdentityServerBaseUrl
+            value: https://sts.skoruba.local    
+          - name: AdminConfiguration__RequireHttpsMetadata
+            value: false    
+          - name: IdentityServerData__Clients__0__ClientUri
+            value: https://admin.skoruba.local    
+          - name: IdentityServerData__Clients__0__RedirectUris__0
+            value: https://admin.skoruba.local/signin-oidc    
+          - name: IdentityServerData__Clients__0__FrontChannelLogoutUri
+            value: https://admin.skoruba.local/signin-oidc    
+          - name: IdentityServerData__Clients__0__PostLogoutRedirectUris__0
+            value: https://admin.skoruba.local/signout-callback-oidc    
+          - name: IdentityServerData__Clients__0__AllowedCorsOrigins__0
+            value: https://admin.skoruba.local    
+          - name: IdentityServerData__Clients__1__RedirectUris__0
+            value: https://admin-api.skoruba.local/swagger/oauth2-redirect.html    
+          - name: Serilog__WriteTo__1__Args__connectionString
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+          - name: DockerConfiguration__UpdateCaCertificate
+            value: true    
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development    
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        - name: clappit.iam.admin.api
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.registry }}/clappit.iam.admin.api:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          env:
+          - name: VIRTUAL_HOST
+            value: admin-api
+          - name: AdminApiConfiguration__RequireHttpsMetadata
+            value: false
+          - name: AdminApiConfiguration__ApiBaseUrl
+            value: https://admin-api.skoruba.local
+          - name: AdminApiConfiguration__IdentityServerBaseUrl
+            value: https://sts.skoruba.local
+          - name: ConnectionStrings__ConfigurationDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+          - name: ConnectionStrings__PersistedGrantDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+          - name: ConnectionStrings__IdentityDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+          - name: ConnectionStrings__AdminLogDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+          - name: ConnectionStrings__AdminAuditLogDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+          - name: ConnectionStrings__DataProtectionDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+          - name: DockerConfiguration__UpdateCaCertificate
+            value: true
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        - name: clappit.iam.sts
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.registry }}/clappit.iam.sts:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          env:
+          - name: VIRTUAL_HOST
+            value: sts
+          - name: ConnectionStrings__ConfigurationDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+          - name: ConnectionStrings__PersistedGrantDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+          - name: ConnectionStrings__IdentityDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+          - name: ConnectionStrings__DataProtectionDbConnection
+            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+          - name: AdminConfiguration__IdentityAdminBaseUrl
+            value: https://admin.skoruba.local
+          - name: IdentityServerOptions__IssuerUri
+            value: https://sts.skoruba.local
+          - name: IdentityServerOptions__Events__RaiseErrorEvents
+            value: true
+          - name: IdentityServerOptions__Events__RaiseInformationEvents
+            value: true
+          - name: IdentityServerOptions__Events__RaiseFailureEvents
+            value: true
+          - name: IdentityServerOptions__Events__RaiseSuccessEvents
+            value: true
+          - name: DockerConfiguration__UpdateCaCertificate
+            value: true
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
