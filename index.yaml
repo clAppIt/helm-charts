@@ -65,4 +65,15 @@ entries:
     urls:
     - https://github.com/clAppIt/helm-charts/releases/download/pgbouncer-2022.10.1/pgbouncer-2022.10.1.tgz
     version: 2022.10.1
-generated: "2022-10-12T03:25:24.485015713Z"
+  redis:
+  - apiVersion: v2
+    appVersion: 2022.10.1
+    created: "2022-10-12T06:30:14.210332774Z"
+    description: Helm chart that deploys redis service
+    digest: a445264f64d0a32b4091681bf0d556833434f8066ddbbb64c96334e831259824
+    name: redis
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/redis-2022.10.1/redis-2022.10.1.tgz
+    version: 2022.10.1
+generated: "2022-10-12T06:30:14.210339974Z"
