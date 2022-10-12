@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgbouncer
+spec:
+  template:
+    spec:
+      containers:
+      - name: pgbouncer
+        resources: 
+          limits:
+            memory: 250Mi
+          requests:
+            cpu: 1000m
+            memory: 250Mi

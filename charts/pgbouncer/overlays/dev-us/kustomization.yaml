@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+bases:
+- ../../base
+images:
+- digest: sha256:6841d1022f291eed464479451f6953d8a269b6ac31f8f17747440c0e34a31d46
+  name: dev-harbor.cam.zeus.com/pzt/pgbouncer
+  newName: ps-harbor.lab.psecure.net/pzt/pgbouncer
+- digest: sha256:8a33f3725c86f2a0810937db11687384cf847fd05dd632dfe8eee07aa49e6fdb
+  name: dev-harbor.cam.zeus.com/pzt/pg-init
+  newName: ps-harbor.lab.psecure.net/pzt/pg-init
+- digest: sha256:29af3bf3a0db79b5359ec105b96a11e23c528b47822bc49503d201ec8caea393
+  name: dev-harbor.cam.zeus.com/pzt/pg-db-init
+  newName: ps-harbor.lab.psecure.net/pzt/pg-db-init
+kind: Kustomization

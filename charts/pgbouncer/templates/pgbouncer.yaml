@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgbouncer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pgbouncer
+  template:
+    metadata:
+      labels:
+        app: pgbouncer
+        egress-ext-kubernetes: "true"
+        egress-ext-postgres: "true"
+      annotations:
+        prometheus.io/port: "9108"
+        prometheus.io/scrape: "true"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - pgbouncer
+              topologyKey: "kubernetes.io/hostname"
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 10
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                    - pgbouncer
+                topologyKey: "topology.kubernetes.io/zone"
+      serviceAccountName: pgbouncer-secret-list
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - image: "{{ .Values.image.registry }}/pgbouncer:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        name: pgbouncer
+        resources: 
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 200m
+            memory: 100Mi
+        env:
+          - name: PGSERVICEFILE
+            value: /var/run/postgres-template-creds/pgservicefile
+        imagePullPolicy: Always
+        volumeMounts:
+          - name: pgbouncer-postgres-template-creds
+            mountPath: /var/run/postgres-template-creds
+            readOnly: true
+          - name: pgbouncer-stats-user-creds
+            mountPath: /var/run/postgres-stats-user-creds
+            readOnly: true
+          - name: pgbouncer-config
+            mountPath: /var/run/pgbouncer/
+        readinessProbe:
+            tcpSocket:
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      restartPolicy: Always
+      volumes:
+      - name: pgbouncer-postgres-template-creds
+        secret:
+          secretName: pgbouncer-template-credentials
+          defaultMode: 256
+      - name: pgbouncer-stats-user-creds
+        secret:
+          secretName: bouncer-stats-service-postgres-ro-credentials
+          defaultMode: 256        
+      - name: pgbouncer-config
+        configMap:
+          name: pgbouncer-config

@@ -1,6 +1,6 @@
 apiVersion: v2
-name: clappit-iam
-description: A Helm chart for Kubernetes
+name: pgbouncer
+description: Helm Chart that deploys pgbouncer services
 
 # A chart can be either an 'application' or a 'library' chart.
 #

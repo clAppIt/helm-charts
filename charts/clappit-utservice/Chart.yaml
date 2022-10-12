@@ -1,6 +1,6 @@
 apiVersion: v2
-name: clappit-iam
-description: A Helm chart for Kubernetes
+name: clappit-utservice
+description: Helm chart that deploys User & Tenant Management service
 
 # A chart can be either an 'application' or a 'library' chart.
 #

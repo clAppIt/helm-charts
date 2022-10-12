@@ -1,0 +1,33 @@
+# RBAC permissions used to allow the pgbouncer pod to get all the database
+# secrets in the default namespace.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pgbouncer-secret-list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pgbouncer-secret-list-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - list
+  - get
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pgbouncer-secret-list-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pgbouncer-secret-list-role
+subjects:
+- kind: ServiceAccount
+  name: pgbouncer-secret-list
+  namespace: default

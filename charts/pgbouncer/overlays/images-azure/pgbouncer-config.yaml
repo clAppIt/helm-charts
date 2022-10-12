@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pgbouncer-config
+  labels:
+    app: pgbouncer
+data:
+  # Remember pgbouncer config changes that are common to all platforms need to
+  # change in 3 places: base, images-azure and staging.
+  # Changes that affect Azure only need to change in  2 places: images-azure and staging.
+  pgbouncer.ini.tmpl: |
+    [databases]
+    *                         = $connection_string
+    [pgbouncer]
+    listen_addr               = *
+    listen_port               = $listen_port
+    stats_users               = $stats_user
+    auth_type                 = scram-sha-256
+    auth_file                 = $auth_file
+    server_tls_sslmode        = verify-full
+    server_tls_ca_file        = /etc/ssl/certs/BaltimoreCyberTrustDigicertGlobalG2_CombinedRoots.pem
+    client_tls_sslmode        = disable
+    max_client_conn           = 2500
+    log_connections           = 1
+    log_disconnections        = 1
+    ignore_startup_parameters = extra_float_digits
+    syslog                    = 1
+    verbose                   = 2
+  pgbouncer-exporter.yaml.tmpl: |
+    exporter_host: 0.0.0.0
+    exporter_port: $exporter_port
+    pgbouncers:
+      - dsn: "postgresql://$pgbouncer_username:$pgbouncer_password@$pgbouncer_host:$pgbouncer_port/pgbouncer"
+        connect_timeout: 60
+        exclude_databases:
+        - pgbouncer
