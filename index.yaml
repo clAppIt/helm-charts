@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   clappit-iam:
   - apiVersion: v2
+    appVersion: 2022.10.1
+    created: "2022-10-12T03:25:23.716426262Z"
+    description: A Helm chart for Kubernetes
+    digest: 58b0980266c79fd6fb00007894e0a448646d3efb37f6c998bd36f08c4f7b9f89
+    name: clappit-iam
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/clappit-iam-2022.10.1/clappit-iam-2022.10.1.tgz
+    version: 2022.10.1
+  - apiVersion: v2
     appVersion: 0.1.0
     created: "2022-10-11T06:23:30.819996893Z"
     description: A Helm chart for Kubernetes
@@ -11,4 +21,48 @@ entries:
     urls:
     - https://github.com/clAppIt/helm-charts/releases/download/clappit-iam-0.1.0/clappit-iam-0.1.0.tgz
     version: 0.1.0
-generated: "2022-10-11T06:23:30.820001193Z"
+  clappit-utservice:
+  - apiVersion: v2
+    appVersion: 2022.10.1
+    created: "2022-10-12T03:25:23.970648888Z"
+    description: Helm chart that deploys User & Tenant Management service
+    digest: 3f73989cd4417850ec57491d10ee802bb05f3a4efef999f1163b09620d891e30
+    name: clappit-utservice
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/clappit-utservice-2022.10.1/clappit-utservice-2022.10.1.tgz
+    version: 2022.10.1
+  nginx-ingress:
+  - apiVersion: v2
+    appVersion: 2.4.0
+    created: "2022-10-12T03:25:24.242916352Z"
+    description: NGINX Ingress Controller
+    digest: f49630909c23c7045ae87f3fc3bbe13aca04bb92be26f533f1163207605405aa
+    home: https://github.com/nginxinc/kubernetes-ingress
+    icon: https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/v2.4.0/deployments/helm-chart/chart-icon.png
+    keywords:
+    - ingress
+    - nginx
+    kubeVersion: '>= 1.19.0-0'
+    maintainers:
+    - email: kubernetes@nginx.com
+      name: nginxinc
+    name: nginx-ingress
+    sources:
+    - https://github.com/nginxinc/kubernetes-ingress/tree/v2.4.0/deployments/helm-chart
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/nginx-ingress-0.15.0/nginx-ingress-0.15.0.tgz
+    version: 0.15.0
+  pgbouncer:
+  - apiVersion: v2
+    appVersion: 2022.10.1
+    created: "2022-10-12T03:25:24.485007113Z"
+    description: Helm Chart that deploys pgbouncer services
+    digest: 36d234ecfbd0b473fdfc7c79e8e915bdac14990caf5021f9884092edcc98f6a1
+    name: pgbouncer
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/pgbouncer-2022.10.1/pgbouncer-2022.10.1.tgz
+    version: 2022.10.1
+generated: "2022-10-12T03:25:24.485015713Z"
