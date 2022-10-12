@@ -1,0 +1,340 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: redis
+  name: redis-node
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis
+      role: node
+  serviceName: redis-headless
+  template:
+    metadata:
+      annotations:
+        checksum/configmap: fa49770821ea1bf80a2123ea3d462c7e6b039ebf49b57b9489cb6243a3695c4e
+        checksum/health: af1d0129d82de19c4d97daf1a52895204994d21da6cbaeaac38ae8b9da89cfc1
+        checksum/secret: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+        prometheus.io/port: "9121"
+        prometheus.io/scrape: "true"
+      labels:
+        app: redis
+        egress-ext-backup: "true"
+        role: node
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - redis
+                - key: role
+                  operator: In
+                  values:
+                  - node
+              topologyKey: topology.kubernetes.io/zone
+            weight: 10
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - redis
+              - key: role
+                operator: In
+                values:
+                - node
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - command:
+        - /bin/bash
+        - -c
+        - /opt/bitnami/scripts/start-scripts/start-node.sh
+        env:
+        - name: REDIS_MASTER_PORT_NUMBER
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: redis-password
+              name: redis-v2
+        - name: REDIS_MASTER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: redis-password
+              name: redis-v2
+        - name: REDIS_TLS_ENABLED
+          value: "no"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_DATA_DIR
+          value: /data
+        image: docker.io/bitnami/redis:6.0.16-debian-10-r106
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - /health/ping_liveness_local.sh 5
+          failureThreshold: 5
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: redis
+        ports:
+        - containerPort: 6379
+          name: redis
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - /health/ping_readiness_local.sh 5
+          failureThreshold: 5
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 10
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        securityContext:
+          runAsUser: 1001
+        volumeMounts:
+        - mountPath: /opt/bitnami/scripts/start-scripts
+          name: start-scripts
+        - mountPath: /health
+          name: health
+        - mountPath: /data
+          name: redis-data
+        - mountPath: /opt/bitnami/redis/mounted-etc
+          name: config
+        - mountPath: /opt/bitnami/redis/etc
+          name: redis-tmp-conf
+      - command:
+        - /bin/bash
+        - -c
+        - /opt/bitnami/scripts/start-scripts/start-sentinel.sh
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: redis-password
+              name: redis-v2
+        - name: REDIS_SENTINEL_TLS_ENABLED
+          value: "no"
+        - name: REDIS_SENTINEL_PORT
+          value: "26379"
+        image: docker.io/bitnami/redis-sentinel:6.0.16-debian-10-r103
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - /health/ping_sentinel.sh 5
+          failureThreshold: 5
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: sentinel
+        ports:
+        - containerPort: 26379
+          name: redis-sentinel
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - /health/ping_sentinel.sh 5
+          failureThreshold: 5
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          limits:
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          runAsUser: 1001
+        volumeMounts:
+        - mountPath: /opt/bitnami/scripts/start-scripts
+          name: start-scripts
+        - mountPath: /health
+          name: health
+        - mountPath: /data
+          name: redis-data
+        - mountPath: /opt/bitnami/redis-sentinel/mounted-etc
+          name: config
+        - mountPath: /opt/bitnami/redis-sentinel/etc
+          name: sentinel-tmp-conf
+      - command:
+        - /bin/bash
+        - -c
+        - |
+          if [[ -f '/secrets/redis-password' ]]; then
+          export REDIS_PASSWORD=$(cat /secrets/redis-password)
+          fi
+          export REDIS_EXPORTER_CHECK_STREAMS=zero.events.*
+          redis_exporter
+        env:
+        - name: REDIS_ALIAS
+          value: redis
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: redis-password
+              name: redis-v2
+        image: docker.io/bitnami/redis-exporter:1.34.1-debian-10-r2
+        imagePullPolicy: IfNotPresent
+        name: metrics
+        ports:
+        - containerPort: 9121
+          name: metrics
+        resources:
+          limits:
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          runAsUser: 1001
+      - command:
+        - /backup.py
+        - --base-name
+        - redis
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: redis-password
+              name: redis-v2
+        image: dev-harbor.cam.zeus.com/redis/redis-backup-restore
+        imagePullPolicy: Always
+        name: backup
+        resources:
+          limits:
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          runAsUser: 1001
+        volumeMounts:
+        - mountPath: /data
+          name: redis-data
+        - mountPath: /credentials
+          name: backup-creds
+      initContainers:
+      - command:
+        - /bin/sh
+        - -c
+        - |
+          cd /data
+          echo $(date -u -Iseconds)$'\t'INFO$'\t'Starting search for temporary files
+          TEMPFILES="$(find . -name 'temp-*')"
+          for FILE in $TEMPFILES ; do
+            echo $(date -u -Iseconds)$'\t'WARN$'\t'Found temporary file $FILE
+            rm $FILE 2>/tmp/error.msg
+            ERRORMSG=$(cat /tmp/error.msg | tr "\n" " ")
+            rm /tmp/error.msg
+            if [ "$ERRORMSG" != "" ] ; then
+              echo $(date -u -Iseconds)$'\t'ERROR$'\t'Error detected during deletion of temporary file $FILE: $ERRORMSG
+            else
+              echo $(date -u -Iseconds)$'\t'INFO$'\t'Deleted temporary file $FILE
+            fi
+          done
+          echo $(date -u -Iseconds)$'\t'INFO$'\t'Finished search for temporary files
+        image: dev-harbor.cam.zeus.com/pzt-3rd/busybox:1.33.1
+        imagePullPolicy: Always
+        name: delete-temp-files
+        resources:
+          limits:
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          runAsUser: 1001
+        volumeMounts:
+        - mountPath: /data
+          name: redis-data
+      - command:
+        - /restore.py
+        - --base-name
+        - redis
+        image: dev-harbor.cam.zeus.com/redis/redis-backup-restore
+        imagePullPolicy: Always
+        name: restore
+        resources:
+          limits:
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          runAsUser: 1001
+        volumeMounts:
+        - mountPath: /data
+          name: redis-data
+        - mountPath: /credentials
+          name: restore-creds
+      securityContext:
+        fsGroup: 1001
+      serviceAccountName: default
+      volumes:
+      - name: backup-creds
+        secret:
+          defaultMode: 365
+          secretName: backup-credentials
+      - name: restore-creds
+        secret:
+          defaultMode: 365
+          secretName: backup-restore-credentials
+      - configMap:
+          defaultMode: 493
+          name: redis-scripts
+        name: start-scripts
+      - configMap:
+          defaultMode: 493
+          name: redis-health
+        name: health
+      - configMap:
+          name: redis
+        name: config
+      - emptyDir: {}
+        name: sentinel-tmp-conf
+      - emptyDir: {}
+        name: redis-tmp-conf
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      labels:
+        app: redis
+        component: slave
+      name: redis-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 8Gi
+      selector: null
