@@ -46,42 +46,67 @@ spec:
               path: /
               port: http
           env:
+          - name: DBSERVER_FQDN
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: host
+          - name: DBSERVER_PORT
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: port
+          - name: DBSERVER_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: username
+          - name: DBSERVER_PWD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: password
+          - name: FQDN
+            valueFrom:
+              configMapRef:
+                name: cluster-instance
+                key: fqdn
           - name: VIRTUAL_HOST
             value: admin.skoruba.local    
           - name: ConnectionStrings__ConfigurationDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: ConnectionStrings__PersistedGrantDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: ConnectionStrings__IdentityDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: ConnectionStrings__AdminLogDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: ConnectionStrings__AdminAuditLogDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: ConnectionStrings__DataProtectionDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: AdminConfiguration__IdentityAdminBaseUrl
-            value: https://admin.skoruba.local    
+            value: $(FQDN)/iam-admin
           - name: AdminConfiguration__IdentityAdminRedirectUri
-            value: https://admin.skoruba.local/signin-oidc    
+            value: $(FQDN)/iam-admin/signin-oidc    
           - name: AdminConfiguration__IdentityServerBaseUrl
-            value: https://sts.skoruba.local    
+            value: $(FQDN)/iam
           - name: AdminConfiguration__RequireHttpsMetadata
-            value: false    
+            value: false
           - name: IdentityServerData__Clients__0__ClientUri
-            value: https://admin.skoruba.local    
+            value: $(FQDN)/iam-admin
           - name: IdentityServerData__Clients__0__RedirectUris__0
-            value: https://admin.skoruba.local/signin-oidc    
+            value: $(FQDN)/iam-admin/signin-oidc    
           - name: IdentityServerData__Clients__0__FrontChannelLogoutUri
-            value: https://admin.skoruba.local/signin-oidc    
+            value: $(FQDN)/iam-admin/signin-oidc    
           - name: IdentityServerData__Clients__0__PostLogoutRedirectUris__0
-            value: https://admin.skoruba.local/signout-callback-oidc    
+            value: $(FQDN)/iam-admin/signout-callback-oidc    
           - name: IdentityServerData__Clients__0__AllowedCorsOrigins__0
-            value: https://admin.skoruba.local    
+            value: $(FQDN)/iam-admin
           - name: IdentityServerData__Clients__1__RedirectUris__0
-            value: https://admin-api.skoruba.local/swagger/oauth2-redirect.html    
+            value: $(FQDN)/iam-admin/swagger/oauth2-redirect.html    
           - name: Serilog__WriteTo__1__Args__connectionString
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true    
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: DockerConfiguration__UpdateCaCertificate
             value: true    
           - name: ASPNETCORE_ENVIRONMENT
@@ -106,26 +131,51 @@ spec:
               path: /
               port: http
           env:
+          - name: DBSERVER_FQDN
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: host
+          - name: DBSERVER_PORT
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: port
+          - name: DBSERVER_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: username
+          - name: DBSERVER_PWD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: password
+          - name: FQDN
+            valueFrom:
+              configMapRef:
+                name: cluster-instance
+                key: fqdn
           - name: VIRTUAL_HOST
             value: admin-api
           - name: AdminApiConfiguration__RequireHttpsMetadata
             value: false
           - name: AdminApiConfiguration__ApiBaseUrl
-            value: https://admin-api.skoruba.local
+            value: $(FQDN)/iam-api
           - name: AdminApiConfiguration__IdentityServerBaseUrl
-            value: https://sts.skoruba.local
+            value: $(FQDN)/iam
           - name: ConnectionStrings__ConfigurationDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: ConnectionStrings__PersistedGrantDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: ConnectionStrings__IdentityDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: ConnectionStrings__AdminLogDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: ConnectionStrings__AdminAuditLogDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: ConnectionStrings__DataProtectionDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: DockerConfiguration__UpdateCaCertificate
             value: true
           - name: ASPNETCORE_ENVIRONMENT
@@ -150,20 +200,45 @@ spec:
               path: /
               port: http
           env:
+          - name: DBSERVER_FQDN
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: host
+          - name: DBSERVER_PORT
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: port
+          - name: DBSERVER_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: username
+          - name: DBSERVER_PWD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: password
+          - name: FQDN
+            valueFrom:
+              configMapRef:
+                name: cluster-instance
+                key: fqdn
           - name: VIRTUAL_HOST
             value: sts
           - name: ConnectionStrings__ConfigurationDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: ConnectionStrings__PersistedGrantDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: ConnectionStrings__IdentityDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: ConnectionStrings__DataProtectionDbConnection
-            value: Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: AdminConfiguration__IdentityAdminBaseUrl
-            value: https://admin.skoruba.local
+            value: $(FQDN)/iam-admin
           - name: IdentityServerOptions__IssuerUri
-            value: https://sts.skoruba.local
+            value: $(FQDN)/iam
           - name: IdentityServerOptions__Events__RaiseErrorEvents
             value: true
           - name: IdentityServerOptions__Events__RaiseInformationEvents
