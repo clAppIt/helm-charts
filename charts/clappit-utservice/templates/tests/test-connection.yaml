@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "clappit.utservice.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "clappit.utservice.name" . }}:{{ .Values.service.port }}']
   restartPolicy: Never

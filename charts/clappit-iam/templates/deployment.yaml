@@ -28,7 +28,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: clappit.iam.admin
+        - name: clappit-iam-admin
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.registry }}/clappit.iam.admin:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -92,7 +92,7 @@ spec:
           - name: AdminConfiguration__IdentityServerBaseUrl
             value: $(FQDN)/iam
           - name: AdminConfiguration__RequireHttpsMetadata
-            value: false
+            value: "false"
           - name: IdentityServerData__Clients__0__ClientUri
             value: $(FQDN)/iam-admin
           - name: IdentityServerData__Clients__0__RedirectUris__0
@@ -108,19 +108,19 @@ spec:
           - name: Serilog__WriteTo__1__Args__connectionString
             value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: DockerConfiguration__UpdateCaCertificate
-            value: true    
+            value: "true" 
           - name: ASPNETCORE_ENVIRONMENT
             value: Development    
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-        - name: clappit.iam.admin.api
+        - name: clappit-iam-admin-api
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.registry }}/clappit.iam.admin.api:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 8081
+              containerPort: 8080
               protocol: TCP
           livenessProbe:
             httpGet:
@@ -159,7 +159,7 @@ spec:
           - name: VIRTUAL_HOST
             value: admin-api
           - name: AdminApiConfiguration__RequireHttpsMetadata
-            value: false
+            value: "false"
           - name: AdminApiConfiguration__ApiBaseUrl
             value: $(FQDN)/iam-api
           - name: AdminApiConfiguration__IdentityServerBaseUrl
@@ -177,19 +177,19 @@ spec:
           - name: ConnectionStrings__DataProtectionDbConnection
             value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: DockerConfiguration__UpdateCaCertificate
-            value: true
+            value: "true"
           - name: ASPNETCORE_ENVIRONMENT
             value: Development
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-        - name: clappit.iam.sts
+        - name: clappit-iam-sts
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.registry }}/clappit.iam.sts:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 8082
+              containerPort: 8080
               protocol: TCP
           livenessProbe:
             httpGet:
@@ -240,15 +240,15 @@ spec:
           - name: IdentityServerOptions__IssuerUri
             value: $(FQDN)/iam
           - name: IdentityServerOptions__Events__RaiseErrorEvents
-            value: true
+            value: "true"
           - name: IdentityServerOptions__Events__RaiseInformationEvents
-            value: true
+            value: "true"
           - name: IdentityServerOptions__Events__RaiseFailureEvents
-            value: true
+            value: "true"
           - name: IdentityServerOptions__Events__RaiseSuccessEvents
-            value: true
+            value: "true"
           - name: DockerConfiguration__UpdateCaCertificate
-            value: true
+            value: "true"
           - name: ASPNETCORE_ENVIRONMENT
             value: Development
           resources:

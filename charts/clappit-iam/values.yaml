@@ -46,27 +46,27 @@ ingress:
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: "*"
-      paths:
-        - path: /iam
-          pathType: Prefix
-          backend:
-            service:
-              name: clappit.iam.sts
-              port: 80
-        - path: /iam-admin
-          pathType: Prefix
-          backend:
-            service:
-              name: clappit.iam.admin
-              port: 80
-        - path: /iam-api
-          pathType: Prefix
-          backend:
-            service:
-              name: clappit.iam.admin.api
-              port: 80
+  host: clappit.com
+  paths:
+  - path: /iam
+    pathType: Prefix
+    backend:
+      service:
+        name: clappit-iam-sts
+        port: 80
+  - path: /iam-admin
+    pathType: Prefix
+    backend:
+      service:
+        name: clappit-iam-admin
+        port: 80
+  - path: /iam-api
+    pathType: Prefix
+    backend:
+      service:
+        name: clappit-iam-admin-api
+        port: 80
+    
           
   tls: []
   #  - secretName: chart-example-tls
