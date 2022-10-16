@@ -3,6 +3,16 @@ entries:
   clappit-iam:
   - apiVersion: v2
     appVersion: 2022.10.1
+    created: "2022-10-16T04:21:15.259350208Z"
+    description: A Helm chart for Kubernetes
+    digest: afa95d6ed2fc3498ae45ddff1beae77db405c06297b537e2324d57f1fb4c249a
+    name: clappit-iam
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/clappit-iam-2022.10.2/clappit-iam-2022.10.2.tgz
+    version: 2022.10.2
+  - apiVersion: v2
+    appVersion: 2022.10.1
     created: "2022-10-12T03:25:23.716426262Z"
     description: A Helm chart for Kubernetes
     digest: 58b0980266c79fd6fb00007894e0a448646d3efb37f6c998bd36f08c4f7b9f89
@@ -22,6 +32,16 @@ entries:
     - https://github.com/clAppIt/helm-charts/releases/download/clappit-iam-0.1.0/clappit-iam-0.1.0.tgz
     version: 0.1.0
   clappit-utservice:
+  - apiVersion: v2
+    appVersion: 2022.10.1
+    created: "2022-10-16T04:21:15.377818127Z"
+    description: Helm chart that deploys User & Tenant Management service
+    digest: 0ed1b339a9f91ac8d1d847f22df280dcdce4623fc2ab732bf1f96b258f27ba9f
+    name: clappit-utservice
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/clappit-utservice-2022.10.2/clappit-utservice-2022.10.2.tgz
+    version: 2022.10.2
   - apiVersion: v2
     appVersion: 2022.10.1
     created: "2022-10-12T03:25:23.970648888Z"
@@ -57,6 +77,16 @@ entries:
   pgbouncer:
   - apiVersion: v2
     appVersion: 2022.10.1
+    created: "2022-10-16T04:21:15.497035153Z"
+    description: Helm Chart that deploys pgbouncer services
+    digest: 7bc368866d2f37ec50b4a2030898e1c2424e6e6f51fcfc827c427d30591b26f7
+    name: pgbouncer
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/pgbouncer-2022.10.2/pgbouncer-2022.10.2.tgz
+    version: 2022.10.2
+  - apiVersion: v2
+    appVersion: 2022.10.1
     created: "2022-10-12T03:25:24.485007113Z"
     description: Helm Chart that deploys pgbouncer services
     digest: 36d234ecfbd0b473fdfc7c79e8e915bdac14990caf5021f9884092edcc98f6a1
@@ -68,6 +98,16 @@ entries:
   redis:
   - apiVersion: v2
     appVersion: 2022.10.1
+    created: "2022-10-16T04:21:15.616285503Z"
+    description: Helm chart that deploys redis service
+    digest: 9a51c4f37d0df8fa0cf82b528b51d5f87e78ba10ff3ba607abd926cef2d50abe
+    name: redis
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/redis-2022.10.2/redis-2022.10.2.tgz
+    version: 2022.10.2
+  - apiVersion: v2
+    appVersion: 2022.10.1
     created: "2022-10-12T06:30:14.210332774Z"
     description: Helm chart that deploys redis service
     digest: a445264f64d0a32b4091681bf0d556833434f8066ddbbb64c96334e831259824
@@ -76,4 +116,4 @@ entries:
     urls:
     - https://github.com/clAppIt/helm-charts/releases/download/redis-2022.10.1/redis-2022.10.1.tgz
     version: 2022.10.1
-generated: "2022-10-12T06:30:14.210339974Z"
+generated: "2022-10-16T04:21:15.616567907Z"
