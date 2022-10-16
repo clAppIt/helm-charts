@@ -36,22 +36,9 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-services:
-  service:
-    name: clappit.iam.sts
-    type: ClusterIP
-    port: 80
-    targetPort: 8080
-  service:
-    name: clappit.iam.admin
-    type: ClusterIP
-    port: 80
-    targetPort: 8081
-  service:
-    name: clappit.iam.admin.api
-    type: ClusterIP
-    port: 80
-    targetPort: 8082
+service:
+  port: 80
+  type: ClusterIP
 
 ingress:
   enabled: true
@@ -60,7 +47,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: *
+    - host: "*"
       paths:
         - path: /iam
           pathType: Prefix
