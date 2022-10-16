@@ -1,15 +1,18 @@
+{{- range .Values.services }}
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "clappit.iam.fullname" . }}
+  name: {{ .service.name }}
   labels:
     {{- include "clappit.iam.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
+    - port: {{ .service.port }}
+      targetPort: {{ .service.targetPort }}
       protocol: TCP
       name: http
   selector:
     {{- include "clappit.iam.selectorLabels" . | nindent 4 }}
+{{- end }}
