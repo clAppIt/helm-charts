@@ -1,0 +1,15 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "clappit-admin-ui.fullname" . }}
+  labels:
+    {{- include "clappit-admin-ui.labels" . | nindent 4 }}
+data:
+  app-conf: |
+    {
+      "production": false,
+      "idpAuthority": "http://{{ .Values.ingress.host }}/iam",
+      "clientid": "clappitadmin",
+      "apiUrl": "http://{{ .Values.ingress.host }}/ut/api/",
+      "pageCount": 50
+    }

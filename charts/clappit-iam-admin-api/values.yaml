@@ -1,4 +1,4 @@
-# Default values for clappit.iam.
+# Default values for clappit-iam-admin-api.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -44,35 +44,24 @@ ingress:
   enabled: true
   className: "nginx"
   annotations:
-    nginx.org/mergeable-ingress-type: "master"
-  host: clappit.com    
+    nginx.org/mergeable-ingress-type: minion
+    nginx.org/location-snippets: |
+            fastcgi_buffers 16 16k;
+            fastcgi_buffer_size 32k;
+  host: clappit.com
+  paths:
+  - path: /iam-api
+    pathType: Prefix
+    backend:
+      service:
+        name: clappit-iam-admin-api
+        port: 80
+    
           
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
-linkerd:
-  namespace: linkerd-viz
-  ingress:
-    enabled: true
-    className: "nginx"
-    annotations:
-      nginx.org/mergeable-ingress-type: "minion"
-      nginx.org/rewrites: "serviceName=web rewrite=/"
-    host: clappit.com    
-    paths:
-    - path: /clinkerd/
-      pathType: Prefix
-      backend:
-        service:
-          name: web
-          port: 8084
-
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

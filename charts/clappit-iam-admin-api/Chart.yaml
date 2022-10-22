@@ -1,6 +1,6 @@
 apiVersion: v2
-name: clappit-iam
-description: Helm Chart to deploy clAppIt Application services.
+name: clappit-iam-admin-api
+description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
 #

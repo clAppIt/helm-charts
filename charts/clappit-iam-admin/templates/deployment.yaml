@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "clappit-iam-admin.fullname" . }}
+  labels:
+    {{- include "clappit-iam-admin.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "clappit-iam-admin.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "clappit-iam-admin.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "clappit-iam-admin.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: clappit-iam-admin
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.registry }}/clappit.iam.admin:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+          - name: DBSERVER_FQDN
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: host
+          - name: DBSERVER_PORT
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: port
+          - name: DBSERVER_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: username
+          - name: DBSERVER_PWD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-admin-credentials
+                key: password
+          - name: FQDN
+            valueFrom:
+              configMapKeyRef:
+                name: cluster-instance
+                key: fqdn
+          - name: ConnectionStrings__ConfigurationDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__PersistedGrantDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__IdentityDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__AdminLogDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__AdminAuditLogDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__DataProtectionDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: AdminConfiguration__IdentityAdminBaseUrl
+            value: $(FQDN)/iam-admin
+          - name: AdminConfiguration__IdentityAdminRedirectUri
+            value: $(FQDN)/iam-admin/signin-oidc    
+          - name: AdminConfiguration__IdentityServerBaseUrl
+            value: $(FQDN)/iam
+          - name: AdminConfiguration__RequireHttpsMetadata
+            value: "false"
+          - name: IdentityServerData__Clients__0__ClientUri
+            value: $(FQDN)/iam-admin
+          - name: IdentityServerData__Clients__0__RedirectUris__0
+            value: $(FQDN)/iam-admin/signin-oidc    
+          - name: IdentityServerData__Clients__0__FrontChannelLogoutUri
+            value: $(FQDN)/iam-admin/signout-oidc    
+          - name: IdentityServerData__Clients__0__PostLogoutRedirectUris__0
+            value: $(FQDN)/iam-admin/signout-callback-oidc    
+          - name: IdentityServerData__Clients__0__AllowedCorsOrigins__0
+            value: $(FQDN)
+          - name: IdentityServerData__Clients__1__ClientUri
+            value: $(FQDN)/iam-api
+          - name: IdentityServerData__Clients__1__RedirectUris__0
+            value: $(FQDN)/iam-api/swagger/oauth2-redirect.html
+          - name: IdentityServerData__Clients__1__AllowedCorsOrigins__0
+            value: $(FQDN)
+          - name: IdentityServerData__Clients__2__ClientUri
+            value: $(FQDN)/clappit
+          - name: IdentityServerData__Clients__2__RedirectUris__0
+            value: $(FQDN)/clappit/auth/signin-callback
+          - name: IdentityServerData__Clients__2__FrontChannelLogoutUri
+            value: $(FQDN)/clappit/auth/signout-callback
+          - name: IdentityServerData__Clients__2__PostLogoutRedirectUris__0
+            value: $(FQDN)/clappit/auth/signout-callback
+          - name: IdentityServerData__Clients__2__AllowedCorsOrigins__0
+            value: $(FQDN)
+          - name: BasePath
+            value: "/iam-admin"
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development    
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

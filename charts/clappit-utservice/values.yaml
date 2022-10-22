@@ -6,9 +6,9 @@ replicaCount: 1
 
 image:
   registry: clappit.azurecr.io
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "2022.10.4"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -42,18 +42,16 @@ service:
 
 ingress:
   enabled: true
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  
-  host: clappit.io
+  className: "nginx"
+  annotations:
+    nginx.org/mergeable-ingress-type: minion
+  host: clappit.com
   paths:
   - path: /ut
     pathType: Prefix
     backend:
       service:
-        name: clappit-iam-sts
+        name: clappit-utservice
         port: 80
 
   tls: []

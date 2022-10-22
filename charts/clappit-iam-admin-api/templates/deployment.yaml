@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "clappit.utservice.fullname" . }}
+  name: {{ include "clappit-iam-admin-api.fullname" . }}
   labels:
-    {{- include "clappit.utservice.labels" . | nindent 4 }}
+    {{- include "clappit-iam-admin-api.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "clappit.utservice.selectorLabels" . | nindent 6 }}
+      {{- include "clappit-iam-admin-api.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,23 +18,23 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "clappit.utservice.selectorLabels" . | nindent 8 }}
+        {{- include "clappit-iam-admin-api.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "clappit.utservice.serviceAccountName" . }}
+      serviceAccountName: {{ include "clappit-iam-admin-api.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: clappit-utservice
+        - name: clappit-iam-admin-api
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.registry }}/clappit.utservice:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.registry }}/clappit.iam.admin.api:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: httpl
+            - name: http
               containerPort: 8080
               protocol: TCP
           env:
@@ -63,10 +63,26 @@ spec:
               configMapKeyRef:
                 name: cluster-instance
                 key: fqdn
-          - name: DatabaseSettings__ConnectionString
-            value: Host=$(DBSERVER_FQDN);Database=ut_service;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: AdminApiConfiguration__RequireHttpsMetadata
+            value: "false"
+          - name: AdminApiConfiguration__ApiBaseUrl
+            value: $(FQDN)/iam-api
+          - name: AdminApiConfiguration__IdentityServerBaseUrl
+            value: $(FQDN)/iam
+          - name: ConnectionStrings__ConfigurationDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__PersistedGrantDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__IdentityDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__AdminLogDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__AdminAuditLogDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__DataProtectionDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
           - name: BasePath
-            value: "/ut"
+            value: "/iam-api"
           - name: ASPNETCORE_ENVIRONMENT
             value: Development
           resources:

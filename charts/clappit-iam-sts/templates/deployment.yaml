@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "clappit.utservice.fullname" . }}
+  name: {{ include "clappit-iam-sts.fullname" . }}
   labels:
-    {{- include "clappit.utservice.labels" . | nindent 4 }}
+    {{- include "clappit-iam-sts.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "clappit.utservice.selectorLabels" . | nindent 6 }}
+      {{- include "clappit-iam-sts.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,23 +18,23 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "clappit.utservice.selectorLabels" . | nindent 8 }}
+        {{- include "clappit-iam-sts.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "clappit.utservice.serviceAccountName" . }}
+      serviceAccountName: {{ include "clappit-iam-sts.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: clappit-utservice
+        - name: clappit-iam-sts
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.registry }}/clappit.utservice:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.registry }}/clappit.iam.sts:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: httpl
+            - name: http
               containerPort: 8080
               protocol: TCP
           env:
@@ -63,10 +63,28 @@ spec:
               configMapKeyRef:
                 name: cluster-instance
                 key: fqdn
-          - name: DatabaseSettings__ConnectionString
-            value: Host=$(DBSERVER_FQDN);Database=ut_service;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__ConfigurationDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__PersistedGrantDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__IdentityDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: ConnectionStrings__DataProtectionDbConnection
+            value: Host=$(DBSERVER_FQDN);Database=clappitiam;Username=$(DBSERVER_USER);Password=$(DBSERVER_PWD);Include Error Detail=true
+          - name: AdminConfiguration__IdentityAdminBaseUrl
+            value: $(FQDN)/iam-admin
+          - name: IdentityServerOptions__IssuerUri
+            value: $(FQDN)/iam
+          - name: IdentityServerOptions__Events__RaiseErrorEvents
+            value: "true"
+          - name: IdentityServerOptions__Events__RaiseInformationEvents
+            value: "true"
+          - name: IdentityServerOptions__Events__RaiseFailureEvents
+            value: "true"
+          - name: IdentityServerOptions__Events__RaiseSuccessEvents
+            value: "true"
           - name: BasePath
-            value: "/ut"
+            value: "/iam"
           - name: ASPNETCORE_ENVIRONMENT
             value: Development
           resources:
