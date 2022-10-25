@@ -45,6 +45,7 @@ ingress:
   className: "nginx"
   annotations:
     nginx.org/mergeable-ingress-type: minion
+    nginx.org/rewrites: "serviceName=clappit rewrite=/"
   host: clappit.com
   paths:
   - path: /clappit
