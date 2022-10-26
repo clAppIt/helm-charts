@@ -41,7 +41,8 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
           - name: app-config
-            mountPath: /usr/share/nginx/html/assets/conf
+            mountPath: /usr/share/nginx/html/assets/conf/app-conf.json
+            subPath: app-conf.json
       volumes:
       - name: app-config
         configMap:
