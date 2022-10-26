@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   clappit-admin-ui:
   - apiVersion: v2
+    appVersion: 2022.10.7
+    created: "2022-10-26T14:23:07.585772932Z"
+    description: A Helm chart for Kubernetes
+    digest: c03ff6f61ed0c99ed220d61a3556496aed465bbedff56473482e7fbc16c15cf0
+    name: clappit-admin-ui
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/clappit-admin-ui-2022.10.7/clappit-admin-ui-2022.10.7.tgz
+    version: 2022.10.7
+  - apiVersion: v2
     appVersion: 2022.10.6
     created: "2022-10-26T14:04:35.970191142Z"
     description: A Helm chart for Kubernetes
@@ -260,4 +270,4 @@ entries:
     urls:
     - https://github.com/clAppIt/helm-charts/releases/download/redis-2022.10.1/redis-2022.10.1.tgz
     version: 2022.10.1
-generated: "2022-10-26T14:04:35.970251248Z"
+generated: "2022-10-26T14:23:07.585815832Z"
