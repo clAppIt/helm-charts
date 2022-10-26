@@ -41,7 +41,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
           - name: app-config
-            mountPath: /usr/share/nginx/html/clappit/assets/conf
+            mountPath: /usr/share/nginx/html/assets/conf
       volumes:
       - name: app-config
         configMap:
