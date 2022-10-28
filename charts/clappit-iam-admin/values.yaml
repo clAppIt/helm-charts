@@ -45,9 +45,8 @@ ingress:
   className: "nginx"
   annotations:
     nginx.org/mergeable-ingress-type: minion
-    nginx.org/location-snippets: |
-            fastcgi_buffers 16 16k;
-            fastcgi_buffer_size 32k;
+    nginx.org/fastcgi-buffer-size: 32k
+    nginx.org/fastcgi-buffers: 16 16k
   host: clappit.com
   paths:
   - path: /iam-admin
