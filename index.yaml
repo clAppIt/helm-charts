@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   clappit-admin-ui:
   - apiVersion: v2
+    appVersion: 2022.10.9
+    created: "2022-10-28T05:12:32.773336229Z"
+    description: A Helm chart for Kubernetes
+    digest: 8d1a3c028cdef3f4c35c38ba857700ea972860df757f063b923dde6a42169da3
+    name: clappit-admin-ui
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/clappit-admin-ui-2022.10.9/clappit-admin-ui-2022.10.9.tgz
+    version: 2022.10.9
+  - apiVersion: v2
     appVersion: 2022.10.8
     created: "2022-10-26T18:54:17.851661863Z"
     description: A Helm chart for Kubernetes
@@ -52,6 +62,16 @@ entries:
     - https://github.com/clAppIt/helm-charts/releases/download/clappit-admin-ui-2022.10.4/clappit-admin-ui-2022.10.4.tgz
     version: 2022.10.4
   clappit-iam:
+  - apiVersion: v2
+    appVersion: 2022.10.9
+    created: "2022-10-28T05:12:32.899312816Z"
+    description: Helm Chart to deploy clAppIt Application services.
+    digest: 935ecdad46499f7bf4384b6bcafa465b3a546a486792ca5ce3d38a6af0abbc16
+    name: clappit-iam
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/clappit-iam-2022.10.9/clappit-iam-2022.10.9.tgz
+    version: 2022.10.9
   - apiVersion: v2
     appVersion: 2022.10.4
     created: "2022-10-22T11:39:17.917407917Z"
@@ -104,6 +124,16 @@ entries:
     version: 0.1.0
   clappit-iam-admin:
   - apiVersion: v2
+    appVersion: 2022.10.9
+    created: "2022-10-28T05:12:33.044879294Z"
+    description: A Helm chart for Kubernetes
+    digest: 4be1919c63b99e5e01a0654731055f97c0fc4784dadad7bbf77121fbe7ef0add
+    name: clappit-iam-admin
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/clappit-iam-admin-2022.10.9/clappit-iam-admin-2022.10.9.tgz
+    version: 2022.10.9
+  - apiVersion: v2
     appVersion: 2022.10.4
     created: "2022-10-22T11:39:18.130355562Z"
     description: A Helm chart for Kubernetes
@@ -114,6 +144,16 @@ entries:
     - https://github.com/clAppIt/helm-charts/releases/download/clappit-iam-admin-2022.10.4/clappit-iam-admin-2022.10.4.tgz
     version: 2022.10.4
   clappit-iam-admin-api:
+  - apiVersion: v2
+    appVersion: 2022.10.9
+    created: "2022-10-28T05:12:33.168281768Z"
+    description: A Helm chart for Kubernetes
+    digest: 3a2a4b962de09338434378558003874db405237a525f950c51e342d50888ae2e
+    name: clappit-iam-admin-api
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/clappit-iam-admin-api-2022.10.9/clappit-iam-admin-api-2022.10.9.tgz
+    version: 2022.10.9
   - apiVersion: v2
     appVersion: 2022.10.4
     created: "2022-10-22T11:39:18.345648721Z"
@@ -126,6 +166,16 @@ entries:
     version: 2022.10.4
   clappit-iam-sts:
   - apiVersion: v2
+    appVersion: 2022.10.9
+    created: "2022-10-28T05:12:33.308638822Z"
+    description: A Helm chart for Kubernetes
+    digest: a38d75ba04051c93cc1c11cf3a55a163abec06146c0313575cbb28fc833cb26a
+    name: clappit-iam-sts
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/clappit-iam-sts-2022.10.9/clappit-iam-sts-2022.10.9.tgz
+    version: 2022.10.9
+  - apiVersion: v2
     appVersion: 2022.10.4
     created: "2022-10-22T11:39:18.549587218Z"
     description: A Helm chart for Kubernetes
@@ -136,6 +186,16 @@ entries:
     - https://github.com/clAppIt/helm-charts/releases/download/clappit-iam-sts-2022.10.4/clappit-iam-sts-2022.10.4.tgz
     version: 2022.10.4
   clappit-utservice:
+  - apiVersion: v2
+    appVersion: 2022.10.9
+    created: "2022-10-28T05:12:33.460272128Z"
+    description: Helm chart that deploys User & Tenant Management service
+    digest: 489a6ab8509794cd1b25af66e72e3f4fe62171260223c50eaed332d20191cc1a
+    name: clappit-utservice
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/clappit-utservice-2022.10.9/clappit-utservice-2022.10.9.tgz
+    version: 2022.10.9
   - apiVersion: v2
     appVersion: 2022.10.4
     created: "2022-10-22T11:39:18.749913596Z"
@@ -280,4 +340,4 @@ entries:
     urls:
     - https://github.com/clAppIt/helm-charts/releases/download/redis-2022.10.1/redis-2022.10.1.tgz
     version: 2022.10.1
-generated: "2022-10-26T18:54:17.851790876Z"
+generated: "2022-10-28T05:12:33.460507429Z"
