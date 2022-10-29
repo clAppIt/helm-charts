@@ -47,6 +47,8 @@ ingress:
     nginx.org/mergeable-ingress-type: minion
     nginx.org/fastcgi-buffer-size: 32k
     nginx.org/fastcgi-buffers: 16 16k
+    nginx.org/proxy-buffer-size: 16k
+    nginx.org/proxy-buffers: 8 16k
   host: clappit.com
   paths:
   - path: /iam-admin
