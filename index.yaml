@@ -63,6 +63,16 @@ entries:
     version: 2022.10.4
   clappit-iam:
   - apiVersion: v2
+    appVersion: 2022.10.11
+    created: "2022-10-31T05:28:45.557271446Z"
+    description: Helm Chart to deploy clAppIt Application services.
+    digest: f17965e99d6f7f6dcf8afc516c887dae35021ac00008c07eb9d503f42566d965
+    name: clappit-iam
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/clappit-iam-2022.10.11/clappit-iam-2022.10.11.tgz
+    version: 2022.10.11
+  - apiVersion: v2
     appVersion: 2022.10.9
     created: "2022-10-28T05:12:32.899312816Z"
     description: Helm Chart to deploy clAppIt Application services.
@@ -370,4 +380,4 @@ entries:
     urls:
     - https://github.com/clAppIt/helm-charts/releases/download/redis-2022.10.1/redis-2022.10.1.tgz
     version: 2022.10.1
-generated: "2022-10-29T18:40:59.646017832Z"
+generated: "2022-10-31T05:28:45.557331346Z"
