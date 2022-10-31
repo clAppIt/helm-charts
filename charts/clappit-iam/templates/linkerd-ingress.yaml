@@ -11,8 +11,8 @@ metadata:
     nginx.org/auth-type: basic
     nginx.org/auth-secret: web-ingress-auth
     nginx.org/auth-realm: 'Authentication Required'
-    nginx.org/proxy-read-timeout: 3600
-    nginx.org/proxy-read-timeout: 3600
+    nginx.org/proxy-connect-timeout: "300s"
+    nginx.org/proxy-read-timeout: "300s"
 spec:
   ingressClassName: nginx
   rules:
