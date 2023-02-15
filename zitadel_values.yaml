@@ -1,0 +1,79 @@
+env:
+- name: ZITADEL_DATABASE_POSTGRES_HOST
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: host
+- name: ZITADEL_DATABASE_POSTGRES_PORT
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: port
+- name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: username
+- name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: password
+- name: ZITADEL_DATABASE_POSTGRES_DATABASE
+  value: zitadel
+- name: ZITADEL_DATABASE_COCKROACH_DATABASE
+  value: zitadel
+- name: ZITADEL_EXTERNALDOMAIN
+  valueFrom:
+    configMapKeyRef:
+      name: cluster-instance
+      key: domain
+- name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: username
+- name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: password
+- name: ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE
+  value: "disable"
+- name: ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE
+  value: "disable"
+- name: ZITADEL_EXTERNALSECURE
+  value: "false"
+- name: ZITADEL_TLS_ENABLED
+  value: "false"
+
+zitadel:
+  dbSslRootCrt:
+  dbSslRootCrtSecret:
+  dbSslClientCrtSecret:
+  masterkey: FOk0NXS1PZlThEaCtribfELN7kCanm2h
+  Database:
+    cockroach:
+      Host: 
+      Port: 
+      Database: 
+      MaxOpenConns: 
+      MaxConnLifetime: 
+      MaxConnIdleTime: 
+      Options: ""
+      User:
+        Username: 
+        Password: 
+        SSL:
+          Mode: disable
+          RootCert: 
+          Cert: 
+          Key: 
+      Admin:
+        Username: 
+        Password: 
+        SSL:
+          Mode: disable
+          RootCert: 
+          Cert: 
+          Key: 
