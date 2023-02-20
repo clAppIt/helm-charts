@@ -390,4 +390,21 @@ entries:
     urls:
     - https://github.com/clAppIt/helm-charts/releases/download/redis-2022.10.1/redis-2022.10.1.tgz
     version: 2022.10.1
-generated: "2022-10-31T05:57:32.370843981Z"
+  zitadel:
+  - apiVersion: v2
+    appVersion: v2.15.0
+    created: "2023-02-20T12:52:25.744113659Z"
+    description: A Helm chart for ZITADEL v2
+    digest: 5e0ff43ea5323ad296c732bc2881693ede6088ad61e284feb1abe55613793e4a
+    icon: https://zitadel.zitadel.cloud/ui/login/resources/themes/zitadel/logo-dark.svg
+    kubeVersion: '>= 1.18.20-0'
+    maintainers:
+    - email: support@zitadel.com
+      name: zitadel
+      url: https://zitadel.com
+    name: zitadel
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/zitadel-4.1.4/zitadel-4.1.4.tgz
+    version: 4.1.4
+generated: "2023-02-20T12:52:25.744220074Z"
