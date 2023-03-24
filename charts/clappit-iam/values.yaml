@@ -44,13 +44,18 @@ ingress:
   enabled: true
   className: "nginx"
   annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.org/mergeable-ingress-type: "master"
-  host: clappit.com    
+    cert-manager.io/issuer: "letsencrypt-production"
+  host: clappit.com
           
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  tls:
+    secretName: clappit-tls-cert
+
+cert:
+  letsencrypt_email: mivaturi@clappit.io
+  le_prod_secret: letsencrypt-prod-key
+  le_stage_secret: letsencrypt-stage-key
 
 linkerd:
   namespace: linkerd-viz
