@@ -63,6 +63,16 @@ entries:
     version: 2022.10.4
   clappit-iam:
   - apiVersion: v2
+    appVersion: 2023.03.1
+    created: "2023-03-24T00:59:45.875477359Z"
+    description: Helm Chart to deploy clAppIt Application services.
+    digest: 9132878d12f830a82a64b506f002351b1d8af62db58ce541b912bc5b63d4715b
+    name: clappit-iam
+    type: application
+    urls:
+    - https://github.com/clAppIt/helm-charts/releases/download/clappit-iam-2023.03.1/clappit-iam-2023.03.1.tgz
+    version: 2023.03.1
+  - apiVersion: v2
     appVersion: 2022.10.12
     created: "2022-10-31T05:57:32.37076318Z"
     description: Helm Chart to deploy clAppIt Application services.
@@ -407,4 +417,4 @@ entries:
     urls:
     - https://github.com/clAppIt/helm-charts/releases/download/zitadel-4.1.4/zitadel-4.1.4.tgz
     version: 4.1.4
-generated: "2023-02-20T12:52:25.744220074Z"
+generated: "2023-03-24T00:59:45.875541559Z"
