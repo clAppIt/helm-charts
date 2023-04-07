@@ -102,3 +102,10 @@ zitadel:
           RootCert: 
           Cert: 
           Key: 
+
+pdb:
+  enabled: false
+  # these values are used for the PDB and are mutally exclusive
+  minAvailable: 1
+  # maxUnavailable: 1
+  annotations: {}

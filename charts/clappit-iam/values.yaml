@@ -103,4 +103,7 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+linkerd:
+  enabled: false
   
