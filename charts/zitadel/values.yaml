@@ -39,7 +39,7 @@ zitadel:
 
 # ZITADEL uses the masterkey for symmetric encryption.
   # You can generate it for example with tr -dc A-Za-z0-9 </dev/urandom | head -c 32
-  masterkey: "uaUKK3cTFAOagjujPwkGcgSe5A1Da7WV"
+  masterkey: "FOk0NXS1PZlThEaCtribfELN7kCanm2h"
   # Reference the name of the secret that contains the masterkey. The key should be named "masterkey".
   # Note: Either zitadel.masterkey or zitadel.masterkeySecretName must be set
   masterkeySecretName: ""
@@ -53,7 +53,7 @@ zitadel:
   # The Secret containing the client CA Certificate and key at tls.crt and tls.key needed for establishing secure database connections
   dbSslClientCrtSecret:
 
-replicaCount: 3
+replicaCount: 1
 
 image:
   repository: ghcr.io/zitadel/zitadel
@@ -93,6 +93,12 @@ env:
   value: postgresql
 - name: ZITADEL_DATABASE_POSTGRES_PORT
   value: "5432"
+- name: ZITADEL_EXTERNALDOMAIN
+  value: dpdev.clappit.io
+  # valueFrom:
+  #  configMapKeyRef:
+  #    name: cluster-instance
+  #    key: domain
 - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
   value: postgres
 - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
@@ -114,7 +120,9 @@ env:
 - name: ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE
   value: "disable"
 - name: ZITADEL_EXTERNALSECURE
-  value: "false"
+  value: "true"
+- name: ZITADEL_EXTERNALPORT
+  value: "443"
 - name: ZITADEL_TLS_ENABLED
   value: "false"
 
@@ -129,10 +137,13 @@ ingress:
   className: "nginx"
   annotations:
       nginx.org/mergeable-ingress-type: minion
+      nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        grpc_set_header Host $host;
   hosts:
-  - host: clappit.com
+  - host: dpdev.clappit.io
     paths:
-    - path: /sso
+    - path: /
       pathType: Prefix
   tls: []
 
@@ -189,3 +200,10 @@ metrics:
     enabled: false
     honorLabels: false
     honorTimestamps: true
+
+pdb:
+  enabled: false
+  # these values are used for the PDB and are mutally exclusive
+  minAvailable: 1
+  # maxUnavailable: 1
+  annotations: {}
