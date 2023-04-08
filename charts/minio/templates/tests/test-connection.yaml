@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "clappit.iam.fullname" . }}-test-connection"
+  name: "{{ include "minio.fullname" . }}-test-connection"
   labels:
-    {{- include "clappit.iam.labels" . | nindent 4 }}
+    {{- include "minio.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test
 spec:
@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "clappit.iam.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "minio.fullname" . }}:{{ .Values.service.port }}']
   restartPolicy: Never
