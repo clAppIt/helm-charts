@@ -37,6 +37,7 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
+  name: blobstore
   port: 80
   type: ClusterIP
 
