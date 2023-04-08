@@ -94,11 +94,10 @@ env:
 - name: ZITADEL_DATABASE_POSTGRES_PORT
   value: "5432"
 - name: ZITADEL_EXTERNALDOMAIN
-  value: dpdev.clappit.io
-  # valueFrom:
-  #  configMapKeyRef:
-  #    name: cluster-instance
-  #    key: domain
+  valueFrom:
+    configMapKeyRef:
+      name: cluster-instance
+      key: dmn
 - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
   value: postgres
 - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD

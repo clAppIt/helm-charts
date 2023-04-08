@@ -37,9 +37,19 @@ env:
       name: postgres-admin-credentials
       key: password
 - name: ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE
-  value: "disable"
+  value: "require"
+- name: ZITADEL_DATABASE_POSTGRES_USER_SSL_ROOTCERT
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: sslrootcert
 - name: ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE
-  value: "disable"
+  value: "require"
+- name: ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_ROOTCERT
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: sslrootcert
 - name: ZITADEL_EXTERNALSECURE
   value: "true"
 - name: ZITADEL_EXTERNALPORT
