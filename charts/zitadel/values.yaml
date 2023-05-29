@@ -53,6 +53,10 @@ zitadel:
   # The Secret containing the client CA Certificate and key at tls.crt and tls.key needed for establishing secure database connections
   dbSslClientCrtSecret:
 
+  SystemAPIUsers:
+    - system-user-1:
+        Path: "./systemapi/system-user-1.pub"
+
 replicaCount: 1
 
 image:
@@ -124,6 +128,7 @@ env:
   value: "443"
 - name: ZITADEL_TLS_ENABLED
   value: "false"
+
 
 service:
   type: ClusterIP
