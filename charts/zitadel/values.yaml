@@ -128,7 +128,6 @@ env:
   value: "443"
 - name: ZITADEL_TLS_ENABLED
   value: "false"
-- name: ZITADEL_SYSTEMAPIUSERS_SYSTEM-USER-1_PATH
 
 
 service:
