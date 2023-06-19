@@ -30,8 +30,12 @@ spec:
   tls:
   - hosts:
     - {{ .Values.ingress.host }}
+    - clinkerd.{{ .Values.ingress.host }}
+    - sso.{{ .Values.ingress.host }}
     secretName: {{ .Values.ingress.tls.secretName }}
   {{- end }}
   rules:
   - host: {{ .Values.ingress.host }}
+  - host: clinkerd.{{ .Values.ingress.host }}
+  - host: sso.{{ .Values.ingress.host }}
 {{- end }}
