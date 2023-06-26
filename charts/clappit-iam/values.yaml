@@ -48,7 +48,9 @@ ingress:
     nginx.org/mergeable-ingress-type: "master"
     cert-manager.io/issuer: "letsencrypt-production"
   host: clappit.com
-          
+  allhosts: 
+    - 'abc'
+    - 'xyz'
   tls:
     secretName: clappit-tls-cert
 
@@ -62,7 +64,7 @@ linkerd:
   ingress:
     enabled: true
     className: "nginx"
-    annotations:
+    annotations: 
       nginx.org/mergeable-ingress-type: "minion"
       nginx.org/rewrites: "serviceName=web rewrite=/"
     host: clappit.com    
