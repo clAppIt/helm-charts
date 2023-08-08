@@ -20,17 +20,9 @@ zitadel:
     ## in by deleting each lines first hash and space
     FirstInstance:
        # path used for volume mounts and to write the secret
-       MachineKeyPath: /machinekey/zitadel-admin-sa.json
        Org:
          Human:
          Machine:
-           Machine:
-             # Creates a service account with the name zitadel-admin-sa,
-             # which results in a secret 'zitadel-admin-sa' with a key 'zitadel-admin-sa.json'
-             Username: zitadel-admin-sa
-             Name: Admin
-           MachineKey:
-             Type: 1
 
   # The ZITADEL config under secretConfig is written to a Kubernetes Secret
   # See all defaults here:
@@ -49,13 +41,13 @@ zitadel:
   masterkeySecretName: ""
 
   # The root CA Certificate needed for establishing secure database connections
-  dbSslRootCrt:
+  dbSslRootCrt: null
 
   # The Secret containing the root CA Certificate at key ca.crt needed for establishing secure database connections
-  dbSslRootCrtSecret:
+  dbSslRootCrtSecret: null
 
   # The Secret containing the client CA Certificate and key at tls.crt and tls.key needed for establishing secure database connections
-  dbSslClientCrtSecret:
+  dbSslClientCrtSecret: null
 
 replicaCount: 1
 
@@ -94,30 +86,43 @@ securityContext: {}
 # Additional environment variables
 env:
 - name: ZITADEL_DATABASE_POSTGRES_HOST
-  value: postgresql
-- name: ZITADEL_DATABASE_POSTGRES_PORT
-  value: "5432"
-- name: ZITADEL_EXTERNALDOMAIN
   valueFrom:
-    configMapKeyRef:
-      name: cluster-instance
-      key: dmn
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: host
+- name: ZITADEL_DATABASE_POSTGRES_PORT
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: port
+- name: ZITADEL_EXTERNALDOMAIN
+  value: sso.stage.clappit.io
+  #valueFrom:
+  #  configMapKeyRef:
+  #    name: cluster-instance
+  #    key: dmn
 - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
-  value: postgres
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: username
 - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
   valueFrom:
     secretKeyRef:
-      name: postgresql
-      key: postgres-password
+      name: postgres-admin-credentials
+      key: password
 - name: ZITADEL_DATABASE_POSTGRES_DATABASE
   value: zitadel
 - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
-  value: postgres
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: username
 - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
   valueFrom:
     secretKeyRef:
-      name: postgresql
-      key: postgres-password
+      name: postgres-admin-credentials
+      key: password
 - name: ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE
   value: "disable"
 - name: ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE
@@ -166,18 +171,26 @@ affinity: {}
 initJob:
   # Once ZITADEL is installed, the initJob can be disabled.
   enabled: true
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
+    helm.sh/hook-weight: "1"
   resources: {}
   activeDeadlineSeconds: 300
   extraContainers: []
   podAnnotations: {}
 
 setupJob:
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
+    helm.sh/hook-weight: "2"
   resources: {}
   activeDeadlineSeconds: 300
   extraContainers: []
   podAnnotations: {}
   machinekeyWriterImage:
-    repository: alpine/k8s
+    repository: bitnami/kubectl
     tag: ""
 
 
