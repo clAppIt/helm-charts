@@ -11,22 +11,18 @@ zitadel:
           Enabled: true
         Webhook:
           Enabled: false
+    SystemAPIUsers:
+      - system-user-1:
+          KeyData: "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFxWW1KNk03dHYvb055YVJzZXRHYQo2NXJGNkhPVllYejRWRlYyWllHd2hwcFZ6RHVWUThXbmE2QmZZcFlQUUxjWm12YklJSjZrVi9mQUtVb0F4RlNSCkh3TUhLUG5TV2RYcDFnQUkxTEJKZFNHcmN1QzVseDlIa3ZXRW1mTkYyYWNCdTdTSWJTdE9lZzZVNEVHbmJ4MTkKZnFSNkNqQ1BEYzRVVUJ6Vlg5cURlTXpEN1BablovdWFhTTBHdnJrTTNZOHZjSVdnU0VuRVFCbFlHRkdMS0tIYgpLeEtmOTNvRTI3N2dTZGdrYTdkRGY1blc2L2RyZ3kyMXB2RlVuUVpaMzJhTlZYQW4rRnRGTFRZUGEzenRSSG05CmVHbG91SzlMWU1FOXB1alBkSUtGbGx2ck5XQXBTeUNqbWwwcTNaQTZNaFl4OGZQUzR5WGloSDM4K2EySldVdVEKZlFJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=="
 
     ## If you want to setup ZITADEL with a service account
     ## instead of a human admin user, comment the following
     ## in by deleting each lines first hash and space
-    # FirstInstance:
-    #   # path used for volume mounts and to write the secret
-    #   MachineKeyPath: /machinekey/zitadel-admin-sa.json
-    #   Org:
-    #     Machine:
-    #       Machine:
-    #         # Creates a service account with the name zitadel-admin-sa,
-    #         # which results in a secret 'zitadel-admin-sa' with a key 'zitadel-admin-sa.json'
-    #         Username: zitadel-admin-sa
-    #         Name: Admin
-    #       MachineKey:
-    #         Type: 1
+    FirstInstance:
+       # path used for volume mounts and to write the secret
+       Org:
+         Human:
+         Machine:
 
   # The ZITADEL config under secretConfig is written to a Kubernetes Secret
   # See all defaults here:
@@ -45,15 +41,15 @@ zitadel:
   masterkeySecretName: ""
 
   # The root CA Certificate needed for establishing secure database connections
-  dbSslRootCrt:
+  dbSslRootCrt: null
 
   # The Secret containing the root CA Certificate at key ca.crt needed for establishing secure database connections
-  dbSslRootCrtSecret:
+  dbSslRootCrtSecret: null
 
   # The Secret containing the client CA Certificate and key at tls.crt and tls.key needed for establishing secure database connections
-  dbSslClientCrtSecret:
+  dbSslClientCrtSecret: null
 
-replicaCount: 3
+replicaCount: 1
 
 image:
   repository: ghcr.io/zitadel/zitadel
@@ -90,33 +86,58 @@ securityContext: {}
 # Additional environment variables
 env:
 - name: ZITADEL_DATABASE_POSTGRES_HOST
-  value: postgresql
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: host
 - name: ZITADEL_DATABASE_POSTGRES_PORT
-  value: "5432"
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: port
+- name: ZITADEL_EXTERNALDOMAIN
+  value: sso.stage.clappit.io
+  #valueFrom:
+  #  configMapKeyRef:
+  #    name: cluster-instance
+  #    key: dmn
 - name: ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME
-  value: postgres
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: username
 - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
   valueFrom:
     secretKeyRef:
-      name: postgresql
-      key: postgres-password
+      name: postgres-admin-credentials
+      key: password
 - name: ZITADEL_DATABASE_POSTGRES_DATABASE
   value: zitadel
 - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
-  value: postgres
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: username
 - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
   valueFrom:
     secretKeyRef:
-      name: postgresql
-      key: postgres-password
+      name: postgres-admin-credentials
+      key: password
 - name: ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE
   value: "disable"
 - name: ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE
   value: "disable"
 - name: ZITADEL_EXTERNALSECURE
-  value: "false"
+  value: "true"
+- name: ZITADEL_EXTERNALPORT
+  value: "443"
 - name: ZITADEL_TLS_ENABLED
   value: "false"
+- name: ZITADEL_FIRSTINSTANCE_ORG_HUMAN_USERNAME
+  value: "admin"
+- name: ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD
+  value: "AdminPass#1"
+
 
 service:
   type: ClusterIP
@@ -129,10 +150,13 @@ ingress:
   className: "nginx"
   annotations:
       nginx.org/mergeable-ingress-type: minion
+      nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        grpc_set_header Host $host;
   hosts:
-  - host: clappit.com
+  - host: dpdev.clappit.io
     paths:
-    - path: /sso
+    - path: /
       pathType: Prefix
   tls: []
 
@@ -147,18 +171,26 @@ affinity: {}
 initJob:
   # Once ZITADEL is installed, the initJob can be disabled.
   enabled: true
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
+    helm.sh/hook-weight: "1"
   resources: {}
   activeDeadlineSeconds: 300
   extraContainers: []
   podAnnotations: {}
 
 setupJob:
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
+    helm.sh/hook-weight: "2"
   resources: {}
   activeDeadlineSeconds: 300
   extraContainers: []
   podAnnotations: {}
   machinekeyWriterImage:
-    repository: alpine/k8s
+    repository: bitnami/kubectl
     tag: ""
 
 
@@ -189,3 +221,10 @@ metrics:
     enabled: false
     honorLabels: false
     honorTimestamps: true
+
+pdb:
+  enabled: false
+  # these values are used for the PDB and are mutally exclusive
+  minAvailable: 1
+  # maxUnavailable: 1
+  annotations: {}

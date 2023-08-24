@@ -21,13 +21,11 @@ env:
       key: password
 - name: ZITADEL_DATABASE_POSTGRES_DATABASE
   value: zitadel
-- name: ZITADEL_DATABASE_COCKROACH_DATABASE
-  value: zitadel
 - name: ZITADEL_EXTERNALDOMAIN
   valueFrom:
     configMapKeyRef:
       name: cluster-instance
-      key: domain
+      key: dmn
 - name: ZITADEL_DATABASE_POSTGRES_USER_USERNAME
   valueFrom:
     secretKeyRef:
@@ -39,19 +37,56 @@ env:
       name: postgres-admin-credentials
       key: password
 - name: ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE
-  value: "disable"
+  value: "require"
+- name: ZITADEL_DATABASE_POSTGRES_USER_SSL_ROOTCERT
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: sslrootcert
 - name: ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE
-  value: "disable"
+  value: "require"
+- name: ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_ROOTCERT
+  valueFrom:
+    secretKeyRef:
+      name: postgres-admin-credentials
+      key: sslrootcert
 - name: ZITADEL_EXTERNALSECURE
-  value: "false"
+  value: "true"
+- name: ZITADEL_EXTERNALPORT
+  value: "443"
 - name: ZITADEL_TLS_ENABLED
   value: "false"
+- name: ZITADEL_FIRSTINSTANCE_ORG_HUMAN_USERNAME
+  value: "admin"
+- name: ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD
+  value: "AdminPass#1"
+
+service:
+  type: ClusterIP
+  port: 8080
+  protocol: http2
+  annotations: {}
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+      nginx.org/mergeable-ingress-type: minion
+      nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+      nginx.ingress.kubernetes.io/configuration-snippet: |  
+        grpc_set_header Host $host;
+  hosts:
+  - host: clappit.com
+    paths:
+    - path: /
+      pathType: Prefix
+  tls: []
 
 zitadel:
   dbSslRootCrt:
   dbSslRootCrtSecret:
   dbSslClientCrtSecret:
-  masterkey: FOk0NXS1PZlThEaCtribfELN7kCanm2h
+  masterkey: uaUKK3cTFAOagjujPwkGcgSe5A1Da7WV
   Database:
     cockroach:
       Host: 
@@ -77,3 +112,10 @@ zitadel:
           RootCert: 
           Cert: 
           Key: 
+
+pdb:
+  enabled: false
+  # these values are used for the PDB and are mutally exclusive
+  minAvailable: 1
+  # maxUnavailable: 1
+  annotations: {}
