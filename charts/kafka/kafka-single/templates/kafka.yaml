@@ -18,7 +18,9 @@ spec:
       - name: external
         port: {{ .Values.externalPort }}
         type: loadbalancer
-        tls: false
+        tls: true
+        authentication:
+          type: scram-sha-512
     {{- with .Values.config }}
     config:
       {{- toYaml . | nindent 6 }}

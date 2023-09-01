@@ -1835,7 +1835,7 @@ server:
     ## Hostnames must be provided if Ingress is enabled.
     ## Secrets must be manually created in the namespace
     hosts: 
-        - qa6.clappit.io
+        - stage.clappit.io
     # -- List of ingress paths
     paths:
        - /argocd(/($|.*))?
